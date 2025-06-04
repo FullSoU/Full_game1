@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>마음 가득 풀소유 - 200탄 초극한생존!</title>
     <style>
+        /* CSS는 이전과 거의 동일 */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
@@ -16,12 +17,12 @@
             background-color: #f0e4c8;
             color: #323232;
             overflow: hidden;
-            padding: 5px; /* 전체 패딩 약간 줄임 */
+            padding: 5px;
             box-sizing: border-box;
         }
         h1 {
             margin-bottom: 5px;
-            font-size: 1.2em; /* 제목 크기 약간 줄임 */
+            font-size: 1.2em;
         }
         #game-super-container {
             display: flex;
@@ -33,33 +34,33 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            max-width: 360px; /* 전체 너비 약간 줄임 */
+            max-width: 360px;
             font-size: 0.8em;
             padding: 3px 0;
         }
         #lives-display {
-            font-size: 1.1em; /* 목숨 아이콘 크기 조정 */
+            font-size: 1.1em;
         }
         #ui-bottom {
-            display: flex; /* Flexbox 사용 */
-            align-items: center; /* 수직 중앙 정렬 */
-            justify-content: space-around; /* 요소들 사이에 공간 배분 */
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
             width: 100%;
             max-width: 360px;
             font-size: 0.8em;
             padding: 3px 0;
             margin-top: 5px;
         }
-        .arrow-button { /* 화살표 버튼 스타일 */
+        .arrow-button {
             padding: 8px 15px;
-            font-size: 1.2em; /* 버튼 내 아이콘/텍스트 크기 */
+            font-size: 1.2em;
             background-color: #8b6b5c;
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            margin: 0 5px; /* 게이지와의 간격 */
+            margin: 0 5px;
         }
         .arrow-button:active {
             background-color: #6a5245;
@@ -67,7 +68,7 @@
         #game-container {
             width: 100%;
             max-width: 360px;
-            height: 440px; /* 게임 영역 높이 조정 */
+            height: 440px;
             border: 3px solid #78503c;
             position: relative;
             background-color: #fff8e7;
@@ -86,11 +87,10 @@
             bottom: 8px;
             left: calc(50% - 18px);
             user-select: none;
-            transition: left 0.05s linear, box-shadow 0.2s; /* box-shadow 트랜지션 추가 */
+            transition: left 0.05s linear, box-shadow 0.2s;
         }
-        /* 무적 효과 CSS */
         .invincible-effect {
-            box-shadow: 0 0 15px 5px gold !important; /* 중요한 스타일로 덮어쓰기 */
+            box-shadow: 0 0 15px 5px gold !important;
             animation: blinkEffect 0.3s infinite alternate;
         }
         @keyframes blinkEffect {
@@ -108,13 +108,19 @@
             user-select: none;
             border-radius: 50%;
         }
-        #score, #stage-info, #stage-goal, #gauge-container { margin-bottom: 3px; }
+        #score, #stage-info, #gauge-container { margin-bottom: 3px; } /* #stage-goal 제거 */
+        #stage-goal { /* #stage-goal 스타일 독립적으로 정의 */
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 0.8em;
+            width: 100%;
+            max-width: 360px;
+        }
         #gauge-container {
             text-align: center;
-            /* flex-grow: 1; /* 게이지가 남은 공간 차지하도록 (선택적) */
         }
         #gauge-bar-container {
-            width: 120px; /* 게이지 바 너비 조정 */
+            width: 120px;
             height: 14px;
             background-color: #e0e0e0;
             border: 1px solid #b0b0b0;
@@ -128,9 +134,9 @@
             background-color: #dca050;
             transition: width 0.2s;
         }
-        #controls { /* 필살기 버튼용 컨테이너 */
+        #controls {
             display: flex;
-            justify-content: center; /* 중앙 정렬 */
+            justify-content: center;
             width: 100%;
             max-width: 360px;
             margin-top: 8px;
@@ -138,7 +144,7 @@
         #specialSkillButton {
             padding: 10px 18px;
             font-size: 0.9em;
-            background-color: #c8a079; /* 필살기 버튼 색상 */
+            background-color: #c8a079;
             color: white;
             border: none;
             border-radius: 8px;
@@ -205,6 +211,8 @@
             </div>
             <button id="rightButton" class="arrow-button">→</button>
         </div>
+        <!-- stage-goal을 ui-bottom 다음, controls 이전에 배치 -->
+        <div id="stage-goal">🌸: 0/0</div> 
         <div id="controls">
             <button id="specialSkillButton">✨필살기</button>
         </div>
@@ -216,7 +224,7 @@
         const scoreDisplay = document.getElementById('score');
         const livesDisplay = document.getElementById('lives-display');
         const stageInfoDisplay = document.getElementById('stage-info');
-        const stageGoalDisplay = document.getElementById('stage-goal');
+        const stageGoalDisplay = document.getElementById('stage-goal'); // HTML에 해당 id가 있는지 확인!
         const gaugeBar = document.getElementById('gauge-bar');
         const startScreen = document.getElementById('startScreen');
         const endScreen = document.getElementById('endScreen');
@@ -251,10 +259,9 @@
         let itemSpawnIntervalId;
         let gameLoopId;
 
-        // 필살기 관련 변수
         let isInvincible = false;
         let invincibleTimerId = null;
-        const INVINCIBLE_DURATION = 10000; // 10초 (밀리초 단위)
+        const INVINCIBLE_DURATION = 10000;
 
         function initializeGameValues() {
             score = 0;
@@ -262,13 +269,13 @@
             mindGauge = 0;
             gaugeFullCount = 0;
             currentStage = 1;
-            isInvincible = false; // 필살기 상태 초기화
-            if (invincibleTimerId) clearTimeout(invincibleTimerId); // 타이머 초기화
-            player.classList.remove('invincible-effect'); // 시각 효과 제거
+            isInvincible = false;
+            if (invincibleTimerId) clearTimeout(invincibleTimerId);
+            player.classList.remove('invincible-effect');
             updateScoreDisplay();
             updateLivesDisplay();
             updateMindGaugeDisplay();
-            updateSpecialSkillButtonState(); // 필살기 버튼 상태 업데이트
+            updateSpecialSkillButtonState();
         }
 
         function setupStage(stage) {
@@ -277,7 +284,7 @@
             if (stage > 1) showStageClearMessage();
 
             updateStageInfoDisplay();
-            updateStageGoalDisplay();
+            updateStageGoalDisplay(); // 이 함수 호출 시 stageGoalDisplay가 null이 아니어야 함
 
             const itemBaseInterval = 1100;
             const itemMinInterval = 200;
@@ -292,16 +299,21 @@
             let display = "";
             let fullHearts = Math.floor(lives);
             let halfHeart = (lives % 1 !== 0);
-
             for(let i=0; i < fullHearts; i++) display += "❤️";
             if(halfHeart) display += "🛡️";
             if(display === "" && lives <= 0) display = "💔";
             livesDisplay.innerHTML = display;
-            updateSpecialSkillButtonState(); // 목숨 변경 시 필살기 버튼 상태 업데이트
+            updateSpecialSkillButtonState();
         }
         function updateMindGaugeDisplay() { gaugeBar.style.width = `${(mindGauge / maxMindGauge) * 100}%`;}
         function updateStageInfoDisplay() { stageInfoDisplay.textContent = `S: ${currentStage}`; }
-        function updateStageGoalDisplay() { stageGoalDisplay.textContent = `🌸: ${itemsCollectedThisStage}/${targetItemsForStage}`; }
+        function updateStageGoalDisplay() { 
+            if (stageGoalDisplay) { // stageGoalDisplay가 null이 아닌지 확인 후 접근
+                stageGoalDisplay.textContent = `🌸: ${itemsCollectedThisStage}/${targetItemsForStage}`; 
+            } else {
+                console.error("stageGoalDisplay is null in updateStageGoalDisplay");
+            }
+        }
 
         function showStageClearMessage() {
             stageClearMessage.textContent = `스테이지 ${currentStage -1} 클리어!`;
@@ -312,61 +324,46 @@
         function collectLotus() {
             score += 10 * currentStage;
             updateScoreDisplay();
-
             mindGauge += 12;
             if (mindGauge >= maxMindGauge) {
                 mindGauge = 0;
                 gaugeFullCount++;
                 let newLives = lives;
-                if (gaugeFullCount === 1) {
-                    newLives += 0.5;
-                } else {
-                    newLives += 1;
-                }
+                if (gaugeFullCount === 1) newLives += 0.5;
+                else newLives += 1;
                 lives = Math.min(maxLives, newLives);
-                updateLivesDisplay(); // 여기서 updateSpecialSkillButtonState 호출됨
+                updateLivesDisplay();
                 gameContainer.style.boxShadow = '0 0 15px cyan';
                 setTimeout(() => gameContainer.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)', 200);
             }
             updateMindGaugeDisplay();
-
             itemsCollectedThisStage++;
             updateStageGoalDisplay();
-
             if (itemsCollectedThisStage >= targetItemsForStage) {
                 currentStage++;
-                if (currentStage > maxStage) {
-                    endGame("최종 클리어! 200탄 초극한생존!");
-                } else {
-                    setupStage(currentStage);
-                }
+                if (currentStage > maxStage) endGame("최종 클리어! 200탄 초극한생존!");
+                else setupStage(currentStage);
             }
         }
 
         function hitObstacle() {
-            if (isInvincible) return; // 무적 상태면 아무것도 안함
-
+            if (isInvincible) return;
             lives -= 0.5;
-            updateLivesDisplay(); // 여기서 updateSpecialSkillButtonState 호출됨
-
+            updateLivesDisplay();
             player.style.opacity = '0.5';
             gameContainer.style.backgroundColor = '#ff7777';
             setTimeout(() => {
                 player.style.opacity = '1';
                 gameContainer.style.backgroundColor = '#fff8e7';
             }, 150);
-
-            if (lives <= 0) {
-                endGame("원효대사의 해골 맞고 뻗었습니다. 마음을 정진하세요");
-            }
+            if (lives <= 0) endGame("원효대사의 해골 맞고 뻗었습니다. 마음을 정진하세요");
         }
 
-        function createItem() { /* ... (이전과 동일) ... */
+        function createItem() {
             if (!gameActive) return;
             const item = document.createElement('div');
             item.classList.add('item');
-            const baseObstacleChance = 0.60;
-            const maxObstacleChance = 0.92;
+            const baseObstacleChance = 0.60; const maxObstacleChance = 0.92;
             let obstacleChance = baseObstacleChance + (currentStage / (maxStage * 0.7)) * (maxObstacleChance - baseObstacleChance);
             obstacleChance = Math.min(maxObstacleChance, obstacleChance);
             const itemType = Math.random() < obstacleChance ? 'obstacle' : 'lotus';
@@ -378,19 +375,19 @@
                 item.style.backgroundColor = 'rgba(60, 60, 60, 0.6)';
             }
             item.style.left = `${Math.random() * (gameContainer.offsetWidth - item.offsetWidth)}px`;
-            item.style.top = `-${item.offsetHeight}px`;
+            item.style.top = `-${item.offsetHeight || 24}px`;
             gameContainer.appendChild(item);
             animateItem(item);
         }
 
-        function animateItem(item) { /* ... (이전과 동일) ... */
-            let itemTop = -item.offsetHeight;
+        function animateItem(item) {
+            let itemTop = parseFloat(item.style.top) || -24;
             const baseSpeed = 2.2; const speedIncrement = currentStage * 0.028;
             const itemSpeed = (Math.random() * 2.0 + baseSpeed + speedIncrement);
             function frame() {
                 if (!gameActive) { item.remove(); return; }
                 itemTop += itemSpeed; item.style.top = `${itemTop}px`;
-                if (itemTop > gameContainer.offsetHeight) { item.remove(); }
+                if (itemTop > gameContainer.offsetHeight) item.remove();
                 else {
                     const playerRect = player.getBoundingClientRect(); const itemRect = item.getBoundingClientRect();
                     if ( playerRect.left < itemRect.right && playerRect.right > itemRect.left &&
@@ -403,7 +400,7 @@
             if(gameActive) requestAnimationFrame(frame);
         }
         
-        function handlePlayerMovement() { /* ... (이전과 동일) ... */
+        function handlePlayerMovement() {
             if (!gameActive) return; let currentLeft = player.offsetLeft;
             if (moveLeft) currentLeft -= playerSpeed; if (moveRight) currentLeft += playerSpeed;
             const minLeft = 0; const maxLeft = gameContainer.offsetWidth - player.offsetWidth;
@@ -411,89 +408,67 @@
             player.style.left = `${currentLeft}px`;
         }
 
-        function gameLoop() { /* ... (이전과 동일) ... */
+        function gameLoop() {
             if (!gameActive) return; handlePlayerMovement();
             gameLoopId = requestAnimationFrame(gameLoop);
         }
 
-        // --- 필살기 관련 함수 ---
         function activateSpecialSkill() {
             if (lives >= 2 && !isInvincible && gameActive) {
-                lives -= 1;
-                updateLivesDisplay(); // 여기서 updateSpecialSkillButtonState 호출됨
-
-                isInvincible = true;
-                player.classList.add('invincible-effect'); // CSS 클래스로 효과 적용
-                specialSkillButton.disabled = true;
-                specialSkillButton.textContent = "무적 발동중..";
-
-                if (invincibleTimerId) clearTimeout(invincibleTimerId); // 이전 타이머가 있다면 해제
-                invincibleTimerId = setTimeout(() => {
-                    deactivateSpecialSkill();
-                }, INVINCIBLE_DURATION);
+                lives -= 1; updateLivesDisplay();
+                isInvincible = true; player.classList.add('invincible-effect');
+                specialSkillButton.disabled = true; specialSkillButton.textContent = "무적 발동중..";
+                if (invincibleTimerId) clearTimeout(invincibleTimerId);
+                invincibleTimerId = setTimeout(() => { deactivateSpecialSkill(); }, INVINCIBLE_DURATION);
             }
         }
 
         function deactivateSpecialSkill() {
-            isInvincible = false;
-            player.classList.remove('invincible-effect');
-            specialSkillButton.textContent = "✨필살기";
-            updateSpecialSkillButtonState(); // 목숨 조건에 따라 다시 활성화될 수 있도록
+            isInvincible = false; player.classList.remove('invincible-effect');
+            specialSkillButton.textContent = "✨필살기"; updateSpecialSkillButtonState();
         }
 
         function updateSpecialSkillButtonState() {
-            if (lives >= 2 && !isInvincible && gameActive) {
-                specialSkillButton.disabled = false;
-            } else {
+            if (lives >= 2 && !isInvincible && gameActive) specialSkillButton.disabled = false;
+            else {
                 specialSkillButton.disabled = true;
-                if (isInvincible) {
-                     specialSkillButton.textContent = "무적 발동중..";
-                } else {
-                     specialSkillButton.textContent = "✨필살기";
-                }
+                if (isInvincible) specialSkillButton.textContent = "무적 발동중..";
+                else specialSkillButton.textContent = "✨필살기";
             }
         }
         
         specialSkillButton.addEventListener('click', activateSpecialSkill);
 
-
         function startGame() {
             startScreen.style.display = 'none';
             endScreen.style.display = 'none';
-            
-            initializeGameValues(); // 여기서 필살기 상태도 초기화
+            gameActive = true;
+            initializeGameValues();
             setupStage(currentStage);
-            
             document.querySelectorAll('.item').forEach(item => item.remove());
             player.style.left = `calc(50% - ${player.offsetWidth/2}px)`;
             player.style.opacity = '1';
-            
-            gameActive = true;
             if(gameLoopId) cancelAnimationFrame(gameLoopId);
             gameLoop();
-            updateSpecialSkillButtonState(); // 게임 시작 시 버튼 상태 갱신
+            updateSpecialSkillButtonState();
         }
 
         function endGame(message) {
             gameActive = false;
             if(itemSpawnIntervalId) clearInterval(itemSpawnIntervalId);
             if(gameLoopId) cancelAnimationFrame(gameLoopId);
-            
-            isInvincible = false; // 게임 종료 시 무적 상태 해제
+            isInvincible = false;
             if(invincibleTimerId) clearTimeout(invincibleTimerId);
             player.classList.remove('invincible-effect');
-            updateSpecialSkillButtonState(); // 버튼 상태 업데이트
-
+            updateSpecialSkillButtonState();
             const items = gameContainer.querySelectorAll('.item');
             items.forEach(item => item.remove());
-            
             endMessage.innerHTML = message.replace(/\n/g, '<br>');
             finalScoreDisplay.textContent = `최종 점수: ${score}`;
             finalStageDisplay.textContent = `도달 스테이지: ${currentStage > maxStage ? maxStage : currentStage}`;
             endScreen.style.display = 'flex';
         }
 
-        // --- Event Listeners (이전과 동일) ---
         startButton.addEventListener('click', startGame);
         restartButton.addEventListener('click', startGame);
 
@@ -501,9 +476,8 @@
             if (!gameActive && e.key !== 'Enter' && e.key !== ' ') return;
             if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') moveLeft = true;
             else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') moveRight = true;
-            else if (e.key.toLowerCase() === 's' || e.key === ' ') { // S키 또는 스페이스바로 필살기
-                e.preventDefault(); // 스페이스바 기본 동작(스크롤) 방지
-                activateSpecialSkill();
+            else if (e.key.toLowerCase() === 's' || e.key === ' ') {
+                e.preventDefault(); activateSpecialSkill();
             }
         });
         document.addEventListener('keyup', (e) => {
@@ -511,14 +485,14 @@
             else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') moveRight = false;
         });
 
-        [leftButton, rightButton].forEach(button => { /* ... (이전과 동일) ... */
+        [leftButton, rightButton].forEach(button => {
             button.addEventListener('mousedown', () => {
                 if (button.id === 'leftButton') moveLeft = true; else if (button.id === 'rightButton') moveRight = true;
             });
             button.addEventListener('mouseup', () => {
                 if (button.id === 'leftButton') moveLeft = false; else if (button.id === 'rightButton') moveRight = false;
             });
-            button.addEventListener('mouseleave', () => { // 버튼 밖으로 마우스 나가도 떼도록
+            button.addEventListener('mouseleave', () => {
                 if (button.id === 'leftButton') moveLeft = false; else if (button.id === 'rightButton') moveRight = false;
             });
             button.addEventListener('touchstart', (e) => {
@@ -533,10 +507,10 @@
         
         let touchStartX = 0;
         let playerInitialLeft = 0;
-        player.addEventListener('touchstart', (e) => { /* ... (이전과 동일) ... */
+        player.addEventListener('touchstart', (e) => {
             if(!gameActive) return; touchStartX = e.touches[0].clientX; playerInitialLeft = player.offsetLeft; e.preventDefault();
         }, { passive: false });
-        player.addEventListener('touchmove', (e) => { /* ... (이전과 동일) ... */
+        player.addEventListener('touchmove', (e) => {
             if(!gameActive) return; let touchCurrentX = e.touches[0].clientX; let deltaX = touchCurrentX - touchStartX;
             let newLeft = playerInitialLeft + deltaX; const minLeft = 0;
             const maxLeft = gameContainer.offsetWidth - player.offsetWidth;
@@ -545,7 +519,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
            player.style.left = `calc(50% - ${player.offsetWidth/2}px)`;
-           updateSpecialSkillButtonState(); // 초기 로드 시 버튼 상태 업데이트
+           updateSpecialSkillButtonState();
         });
     </script>
 </body>
